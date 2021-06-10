@@ -16,6 +16,7 @@ from pprint import pprint
 
 import requests
 from geoip2.database import Reader
+from geoip2.errors import AddressNotFoundError
 
 MB_URL = "https://api.mainnet-beta.solana.com"
 TDS_URL = "https://testnet.solana.com"
@@ -28,8 +29,11 @@ def get_cluster_validators(url: str) -> list[str]:
 
 
 def get_asn(reader: Reader, ip: str):
-    res = reader.asn(ip)
-    return res.autonomous_system_organization
+    try:
+        res = reader.asn(ip)
+        return res.autonomous_system_organization
+    except AddressNotFoundError:
+        return "unknown"
 
 
 def main():
