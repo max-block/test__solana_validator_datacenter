@@ -1,31 +1,10 @@
-# import os
-# from pprint import pprint
-#
-# from dotenv import load_dotenv
-# from geoip2.database import Reader
-#
-# load_dotenv()
-#
-# IP = os.getenv("IP", "216.58.212.142")
-#
-# with Reader("data/GeoLite2-ASN.mmdb") as reader:
-#     res = reader.asn(IP)
-#     pprint(res.autonomous_system_organization)
 from collections import Counter
 from pprint import pprint
 
-import requests
 from geoip2.database import Reader
 from geoip2.errors import AddressNotFoundError
 
-MB_URL = "https://api.mainnet-beta.solana.com"
-TDS_URL = "https://testnet.solana.com"
-
-
-def get_cluster_validators(url: str) -> list[str]:
-    params = {"jsonrpc": "2.0", "id": 1, "method": "getClusterNodes"}
-    res = requests.post(url, json=params)
-    return [v["gossip"].split(":")[0] for v in res.json()["result"]]
+from app.commons import get_cluster_validators, MB_URL, TDS_URL
 
 
 def get_asn(reader: Reader, ip: str):
@@ -37,7 +16,7 @@ def get_asn(reader: Reader, ip: str):
 
 
 def main():
-    asn_reader = Reader("data/GeoLite2-ASN.mmdb")
+    asn_reader = Reader("./data/GeoLite2-ASN.mmdb")
     mb_validators = get_cluster_validators(MB_URL)
     mb_asn_list = []
     for ip in mb_validators:
